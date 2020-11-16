@@ -10,6 +10,7 @@ services:
           MSSQL_DB: intranet-production
           MSSQL_USER: intranet
           MSSQL_PASSWORD: 1p@sswordY
+          SQLCOLLATION: SQL_Latin1_General_CP1_CI_AS
         ports:
             - "1433:1433"
 
