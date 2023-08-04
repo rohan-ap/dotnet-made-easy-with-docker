@@ -1,18 +1,23 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 As base
-WORKDIR /app
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build-env
+
+WORKDIR /src
+
+COPY *.csproj .
+RUN dotnet restore
+
+COPY . .
+
+
+RUN dotnet publish -c Release -o /publish
+
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as runtime
+
+
+WORKDIR /publish
+
+COPY --from=build-env /publish .
+
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 As build
-WORKDIR /src
-COPY ["dotnet-made-easy-with-docker.csproj", "./"]
-RUN dotnet restore "./dotnet-made-easy-with-docker.csproj"
-COPY . .
-RUN dotnet build "dotnet-made-easy-with-docker.csproj" -c Release -o /app
-
-FROM build AS publish
-RUN dotnet publish "dotnet-made-easy-with-docker.csproj" -c Release -o /app
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "dotnet-made-easy-with-docker.dll"]
